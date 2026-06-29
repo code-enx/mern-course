@@ -124,3 +124,351 @@ body {
 */
 
 
+/* =========================================
+   HEADER
+   ========================================= */
+
+.app-header {
+		background: linear-gradient(135deg, var(--color-primary) 0%, #723aed 100%);
+		color: var(--color-surface);
+		padding: var(--spacing-2xl) var(--spacing-md);
+		text-align: center;
+}
+
+/*
+  linear-gradient creates a smooth transition between colors.
+  135deg means the gradient runs diagonally (top-left to bottom-right).
+  0% is where the first color starts, 100% is where the second ends.
+  #7c3aed is a purple - creating an indigo-to-purple gradient.
+*/
+
+.header-content {
+		max-width: var(--max-width);
+		margin: 0 auto;
+}
+
+/*
+  max-width prevents the content from stretching too wide
+  on large screens. Text becomes hard to read if it spans
+  the full width of a wide monitor.
+
+  margin: 0 auto centers a block element horizontally.
+  Top and bottom margin is 0. Left and right margin is
+  "auto" - the browser splits the remaining space equally
+  on both sides, centering the element.
+*/
+
+.app-title {
+		font-size: var(--font-size-3xl);
+		font-weight: var(--font-weight-bold);
+		letter-spacing: -0.02em;
+		margin-bottom: var(--spacing-xs);
+}
+
+/*
+  letter-spacing: -0.02em tightens the space between
+  characters slightly. Large headings often look better
+  with slightly tighter letter spacing. Negative values
+  tighten, positive values spread out.
+*/
+
+.app-subtitle {
+		font-size: var(--font-size-lg);
+		opacity: 0.85;
+}
+
+/*
+  opacity reduces the transparency of the entire element
+  including its children. 0 is invisible, 1 is fully opaque.
+  0.85 makes the subtitle slightly transparent, creating
+  visual hierarchy - the title is more prominent.
+*/
+
+/* =======================================
+   MAIN CONTENT
+   ======================================= */
+
+.app-margin {
+		max-width: var(--max-width);
+		margin: 0 auto;
+		padding: var(--spacing-xl) var(--spacing-md);
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-lg);
+}
+
+/*
+  We make the main element a flex container with
+  flex-direction: column. This stacks the sections
+  (form, stats, filters, list) vertically.
+
+  gap: var(--spacing-lg) adds space between each section
+  automatically - without adding margins to individual sections.
+  This is the cleanest way to space stacked elements.
+*/
+
+
+/* ========================================
+   FORM SECTION
+   ======================================== */
+
+.form-section {
+		background-color: var(--color-surface);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-xl);
+		box-shadow: var(--shadow-md);
+}
+
+/*
+  box-shadow adds a shadow beneath the elements.
+  Format: horizontal-offset vertical-offset blur-radius
+          spread-radius color
+
+  Our --shadow-md uses two shadows layered on top of each other
+  for a more natural, multi-layered shadow effect.
+*/
+
+.form-label {
+		display: block;
+		font-size: var(--font-size-sm);
+		font-weight: var(--font-weight-semibold);
+		color: var(--color-text-light);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		margin-bottom: var(--spacing-sm);
+}
+
+/*
+  display: block on a label makes it take its own line.
+  By default labels are inine - they sit next to the input.
+  Setting display: block stacks the label above the input.
+
+  text-transform: uppercase converts text to uppercase.
+  Using uppercase + letter-spacing creates a "label" aesthetic
+  common in modern UI design.
+*/
+
+.input-row {
+		display: flex;
+		gap: var(--spacing-sm);
+}
+
+/*
+  The input row uses Flexbox to place the input and button
+  side by side on the same line.
+*/
+
+.task-input {
+		flex: 1;
+		padding: var(--spacing-sm) var(--spacing-md);
+		font-size: var(--font-size-base);
+		font-family: inherit;
+		color: var(--color-text);
+		background-color: var(--color-surface);
+		border: 2px solid var(--color-border);
+		border-radius: var(--border-radius-md);
+		outline: none;
+		transition: border-color var(--transition-fast),
+		            box-shadow var(--transition-fast);
+}
+
+/*
+  flex: 1 makes the input grow to fill all available space
+  in the row, pushing the button to the right.
+
+  font-family: inherit - inputs do not inherit font-family
+  from the body by default. This is a browser quirk.
+  We explicitly tell the input to use the same font as
+  its parent.
+
+  outline: none removes the default browser focus ring.
+  We replace it with our own below using : focus.
+
+  transistion animates changes to border-color and box-shadow.
+  When the state changes (e.g. on focus) the change
+  animates over 150ms instead of jumping instantly.
+*/
+
+.task-input::placeholder {
+		color: var(--color-text-lighter);
+}
+
+/*
+  :: placeholder is a pseudo-element targeting the
+  placeholder text inside an input.
+*/
+
+.task-input:focus {
+		border-color: var(--color-primary);
+		box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+/*
+  When the input is focused (clicked or tabbed into):
+  - Border becomes primary color (indigo)
+  - A subtle "glow" ring appears using box-shadow
+
+  The box-shadow here has 0 horizontal and vertical offset,
+  0 blur, but 3px spread - creating a aolid ring effect.
+  this is a common modern focus indicator that is both
+  beautiful and accessible.
+*/
+
+.input-error {
+		font-size: var(--font-size-sm);
+		color: var(--color-danger);
+		margin-top: var(--spacing-xs);
+		min-height: 1.25rem;
+}
+
+/*
+  min-height prevents layout shift when the error message 
+  appears and disappears. Without it, the form section
+  would jump up and down as the error appears.
+*/
+
+
+/* =============================================
+   BUTTONS
+   ============================================= */
+
+.btn {
+		display: inline-flow;
+		align-items: center;
+		justify-content: center;
+		padding: var(--spacing-sm) var(--spacing-lg);
+		font-size: var(--font-size-base);
+		font-family: inherit;
+		font-weight: var(--font-weight-medium);
+		border: none;
+		border-radius: var(--border-radius-md)
+		cursor: pointer;
+		transition: background-color var(--transition-fast),
+		            transform var(--transition-fast),
+					box-shadow var(--transition-fast);
+		white-space: nowrap;
+		text-decoration: none;
+}
+
+/*
+  display: inline-flex lets us use Flexbox inside the button 
+  to center content, while the button itself behaves as inline
+  (sitting next to other elements).
+
+  cursor: pointer changes the mouse cursor to a hand icon
+  when hovering over the button. Buttons already do thid by
+  default but some reset stylesheets remove it.
+
+  white-spac: nowrap prevente button text from wrapping
+  to a second line.
+
+  border: none removes the dddefault browser button border.
+*/
+
+.btn:active {
+		transform: translateY(1px);
+}
+
+/*
+  When a button is actively being clicked (mousedown),
+  it moves 1px downward. This creates a subtle "press"
+  effect that feels satisfying and responsive.
+*/
+
+.btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		transform: none;
+}
+
+*/
+  Disabled buttons are visually dimmed and show a "no"
+  cursor. transform: none prevents the press effect
+  since disabled buttons should not respond.
+*/
+
+/* Primary button */
+.btn-primary {
+		background-color: var(--color-primary);
+		color: var(--color-surface);
+		box-shadow: var(--shadow-sm);
+}
+
+/*
+  :not(:disabled) means "when NOT disabled".
+  This prevents hover styles from applying to disabled buttons.
+*/
+
+/* Danger button */
+.btn-danger {
+		background-color: transparent;
+		color: var(--color-danger);
+		border: 1.5px solid var(--color-danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+		background-color: var(--color-danger);
+		color: var(--color-surface);
+}
+
+/* Small button variant */
+.btn-sm {
+		padding: var(--spacing-xs) var(--spacing-sm);
+		font-size: var(--font-size-sm);
+		border-radius: var(--border-radius-sm);
+}
+
+
+/* =========================================
+   STATS SECTION
+   ========================================= */
+
+.stats-section {
+		background-color: var(--color-surface);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-lg) var(--spacing-xl);
+		box-shadow: var(--shadow-md);
+}
+
+.stats-container {
+		display: flex;
+		justify-content: space-around;
+		gap: var(--spacing-md);
+}
+
+.stat-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-xs);
+		flex: 1;
+}
+
+/*
+  flex-direction: column stacks the number above the label
+  align-items: center centers them horizontally.
+  flex: 1 makes all three cards equal width.
+*/
+
+.stat-number {
+		font-size: var(--font-size-3xl);
+		font-weight: var(--font-weight-bold);
+		color: var(--color-primary);
+		line-height: 1;
+}
+
+/* 
+  line-height: 1 removes extra space above and below
+  the number. For large display numbers, the default
+  line-height adds too much space.
+*/
+
+.stat-label{
+		font-size: var(--font-size-sm);
+		font-weight: var(--font-weight-medium);
+		color: var (--color-text-light);
+		text-transfrom: uppercase;
+		letter-spacing: 0.06;
+}
+
+
