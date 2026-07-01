@@ -163,6 +163,7 @@ body {
 		font-weight: var(--font-weight-bold);
 		letter-spacing: -0.02em;
 		margin-bottom: var(--spacing-xs);
+		color: var(--color-surface);
 }
 
 /*
@@ -175,6 +176,7 @@ body {
 .app-subtitle {
 		font-size: var(--font-size-lg);
 		opacity: 0.85;
+		color: var(--color-surface);
 }
 
 /*
@@ -188,7 +190,7 @@ body {
    MAIN CONTENT
    ======================================= */
 
-.app-margin {
+.app-main {
 		max-width: var(--max-width);
 		margin: 0 auto;
 		padding: var(--spacing-xl) var(--spacing-md);
@@ -472,3 +474,319 @@ body {
 }
 
 
+/* ===================================
+   FILTER SECTION
+   =================================== */
+
+.filter-section {
+		background-color: var(--color-surface);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-sm);
+		box-shadow: var(--shadow-md);
+}
+
+.filter-container {
+		display: flex;
+		gap: var(--spacing-xs);
+}
+
+.btn-filter {
+		flex: 1;
+		background-color: transparent;
+		color: var(--color-text-light);
+		border-radius: var(--border-radius-md);
+		padding: var(--spacing-sm) var(--spacing-md);
+		font-weight: var(--font-weight-medium);
+		border: none;
+		transition: background-color var(--transition-fast),
+		            color var(--transition-fast);
+}
+
+.btn-filter:hover {
+		background-color: var(--color-background);
+		color: var(--color-text);
+}
+
+.btn-filter-active {
+		background-color: var(--color-primary);
+		color: var(--color-surface);
+		box-shadow: var(--shadow-sm);
+}
+
+.btn-filter-active:hover {
+		background-color: var(--color-primary-dark);
+		color: var(--color-surface);
+}
+
+/* ===================================
+   TASK LIST SECTION
+   =================================== */
+
+.task-list-section {
+		background-color: var(--color-surface);
+		border-radius: var(--border-radius-lg);
+		box-shadow: var(--shadow-md);
+		overflow: hidden;
+}
+
+/*
+  overflow: hidden clips the children to the rounded corners.
+  Without this, the first and last task items would have
+  square corners that poke outside the rounded container.
+*/
+
+/* Empty state */
+.empty-state {
+		padding: var(--spacing-2xl) var(--spacing-xl);
+		text-align: center;
+}
+
+.empty-state-text {
+		font-size: var(--font-size-xl);
+		font-weight: var(--font-weight-semibold);
+		color: var(--color-text-light);
+		margin-bottom: var(--spacing-xs);
+}
+
+.empty-state-subtext {
+		font-size: var(--font-size-sm);
+		color: var(--color-text-lighter);
+}
+
+/* Task list */
+.task-list {
+		list-style: none;
+}
+
+/* Individual task item */
+.task-item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: var(--spacing-md) var(--spacing-lg);
+		border-bottom: 1px solid var(--color-border);
+		transition: background-color var(--transition-fast);
+		gap: var(--spacing-md);
+}
+
+.task-item:last-child {
+		border-bottom: none;
+}
+
+.task-item:hover {
+		background-color: var(--color-background);
+}
+
+/*
+  The last task item should not have a bottom border -
+  there is nothing below it to separate from.
+  :last-child removes it cleanly.
+*/
+
+.task-content {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-md);
+		flex: 1;
+		min-width: 0;
+}
+
+/*
+  min-width: 0 is a flex item fix. By default, flex items 
+  cannot shrink below their content size. For text that
+  should truncate (overflow: ellipses), you need 
+  min-width: 0 on the flex item.
+*/
+
+/* The complete button (circular checkbox) */
+.task-complete-btn {
+		width: 22px;
+		height: 22px;
+		min-width: 22px;
+		border-radius: var(--border-radius-full);
+		border: 2px solid var(--color-border);
+		background-color: transparent;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: border-color var(--transition-fast),
+		            background-color var(--transition-fast);
+		padding: 0;
+}
+
+.task-completion-btn:hover {
+		border-color: var(--color-sucess);
+}
+
+/* Task text */
+.task-text {
+		font-size: var(--font-size-base);
+		color: var(--color-text);
+		flex: 1;
+		word-break: break-word;
+}
+
+/*
+  word-break: break-word allows long words (like URLs)
+  to break and wrap to the next line instead of overflowing
+  the container.
+*/
+
+/* Task actions (right side) */
+.task-actions {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-xs);
+		opacity: 0;
+		transition: opacity var(--transition-fast);
+}
+
+.task-items:hover .task-actions {
+		opacity: 1;
+}
+
+/*
+  the action buttons (Edit, Delete) are hidden by default 
+  and only appears when hovering over a task item.
+  This keeps the UI clean and uncluttered.
+
+  The selector .task-item:hover .task-action means:
+  "When .task-item is hovered, style the .task-actions
+  inside it."
+*/
+
+.btn-edit {
+		background-color: transparent;
+		color: var(--color-text-light);
+		border: 1px solid var(--color-border);
+}
+
+.btn-edit:hover {
+		background-color: var(--color-background);
+		color: var(--color-text);
+		border-color: var(--color-text-light);
+}
+
+.btn-delete {
+		background-color: transparent;
+		color: var(--color-transparent);
+		border: 1px solid transparent;
+}
+
+.btn-delete:hover {
+		background-color: #fef2f2;
+		border-color: #fecac1;
+}
+
+/* Completed task styles */
+[data-completed="true"] .task-text {
+		text-decoration: line-through;
+		color: var(--color-text-lighter);
+}
+
+[data-completed="true"] .task-completed-btn {
+		background-color: var(--color-sucess);
+		border-color: var(--color-sucess);
+}
+
+/*
+  Attribute selectors target elements based on data attributes.
+  When JavaScript sets data-completed="true" on a task item,
+  these CSS rules automatically apply - strikethrough on the 
+  text and green on the button.
+  No JavaScript needed to toogle visual styles!
+*/
+
+
+/* ========================================
+   ACTIONS SECTION
+   ======================================== */
+
+.actions-section {
+		display: flex;
+		justify-content: flex-end;
+}
+
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+.app-footer {
+		text-align: center;
+		padding: var(--spacing-xl) var(--spacing-md);
+		color: var(--color-text-lighter);
+		font-size: var(--font-size-sm);
+}
+
+/* ====================================
+   RESPONSIVE DESIGN
+   ==================================== */
+
+/*
+  Media queries apply styles only when certain conditions
+  are ture. The most common condition is screen width.
+
+  @media (max-width: 480px) means: apply these styles
+  only when the viewport is 480px wide or narrower -
+  i.e. on mobile phones.
+
+  This approach is called "desktop-first" - you write
+  styles for desptop, then override them for smaller screens.
+  The opposite approach is "mobile-first" - write for mobile,
+  then override for larger screens. Both are valid.
+*/
+
+@media (max-width: 600px) {
+
+.app-title {
+		font-size:var(--font-size-2xl)
+}
+
+.app-main {
+		padding: var(--spacing-md) var(--spacing-sm);
+		gap: var(--spacing-md);
+}
+
+.form-section {
+		padding: var(--spacing-lg) var(--spacing-md);
+}
+
+.input-row {
+		flex-direction: column;
+}
+
+/*
+  On mobile, the input and button stack vertically
+  instead of sitting side by side.
+  flex-direction: column achieves this with one line.
+*/
+
+.btn-primary {
+		width: 100%;
+}
+
+.stats-container {
+		gap: var(--spacing-sm);
+}
+
+.stats-number {
+		font-size: var (--font-size-2xl);
+}
+
+.task-actions {
+		opacity: 1;
+}
+
+/*
+  On mobile there is no hover, so the task actions
+  must always be visible - you cannot hover on a
+  touchscreen.
+*/
+
+.task-item {
+		flex-wrap: wrap;
+}
+
+}
