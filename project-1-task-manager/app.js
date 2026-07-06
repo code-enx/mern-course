@@ -23,7 +23,7 @@
    ============================================================= */
 
 const state = {
-		task: [],            //Array of task objects
+		tasks: [],            //Array of task objects
 		currentFilter: "all" // Which filter is active: "all" | "active" | "completed"
 }
 
@@ -58,7 +58,7 @@ const state = {
  *
  * @returns {number} A unique timestamp-based ID
  */
-const generateID = () => Date.now()
+const generateId = () => Date.now()
 
 /*
   () => Date.now()
@@ -202,7 +202,7 @@ const createTask = (text) => {
 const addTaskToState = (text) => {
 		const newTask = createTask(text)
 		state.tasks.push(newTask)
-		return.newTask
+		return newTask
 }
 
 /*
@@ -316,3 +316,288 @@ const updateTaskText = (taskId, newText) => {
 		task.text = newText.trim()
 		return task
 }
+
+/**
+ * Returns tasks filtered by the current state.currentFilter.
+ * Does NOT modify state - only reads and returns a subset.
+ * 
+ * @return {Array} Filtered array of tasks
+ */
+const getFilteredTasks = () => {
+		const { tasks, currentFilter } = state
+
+		/*
+		  Object destructuring:
+		  const { tasks, currentFilter } = state
+
+		  is the same as:
+		  const tasks = state.tasks
+		  const currentFilter = state.currentFilter
+
+		  Destructuring extracts properties from an object into
+		  individual variables. Much more concise and readable.
+		*/
+
+		if (currentFilter === "all") {
+				return tasks
+		}
+
+		if (currentFilter === "active") {
+				return tasks.filter(task => !task.isCompleted)
+		}
+
+		if (currentFilter === "completed") {
+				return tasks.filter(task => task.isCompleted)
+		}
+
+		// Should never reach here, but return all tasks as fallback
+		return tasks
+}
+
+/*
+  filter() creates a NEW array containing only the element
+  where the callback returns true.
+
+  tasks.filter(task => !task.isCompleted)
+  Returns only tasks where isCompleted is false (active tasks)
+
+  tasks.filter(task => task.isCompleted)
+  Returns only tasks where isCompleted is true (completed tasks)
+
+  filter() does not modify the original array. It creates
+  and returns a new array. state.tasks is unchanged.
+*/
+
+/**
+ * Removes all completed tasks from state.
+ * Returns the number of tasks removed.
+ *
+ * @returns {number} Count of removed tasks
+ */
+const clearCompletedTasks = () => {
+		const completedCount = state.tasks.filter(
+				task => task.isCompleted
+		).length
+
+		state.tasks = state.tasks.filter(task => !task.isCompleted)
+
+		return completedCount
+}
+
+/*
+  state.tasks = state.tasks.filter(task => !task.isCompleted)
+
+  This replaces state.tasks with a new array containing
+  only the INCOMPLETE tasks. Completed tasks are gone.
+
+  We ARE reassigning state.tasks here (state.tasks = ...)
+  This is allowed because state is declared with const
+  but state.tasks is just a PROPERTY of state - we are not
+  reassigning state itself.
+*/
+
+/**
+ * Sets the active filter.
+ * 
+ * @param {string} filter - "all" | "active" | "completed"
+ */
+const setFilter = (filter) => {
+		const validFilters = ["all", "active", "completed"]
+
+		if (!validFilters.includes(filter)) {
+				console.error(`Invalid filter: "${filter}". Must be one of: ${validFilters.join(", ")}`)
+				return
+		}
+
+		state.currentFilter = filter
+}
+
+/*
+  validFilter.includes(filter) checks if filter is one of
+  the three valid values. Returns true or false.
+
+  If someone calls setFilter("invalid"), we log an error
+  and return early without changing state.
+
+  validFilter.join(", ") converts the array to a string:
+  ["all", "active", "completed"] -> "all, active, completed"
+  Used in the error message.
+*/
+
+/* =============================================================
+   SECTION 4: STATISTICS
+
+   Functions that compute summary data from state.
+   Pure functions - they read state but do not modify it.
+   ============================================================= */
+
+/**
+ * Returns statistics about the current tasks.
+ *
+ * @returns {Object} Stats object with counts
+ */
+const getStats = () => {
+		const total = state.tasks.length
+		const completed = state.tasks.filter(task => task.isCompleted).length
+		const active = total - completed
+
+		return { total, active, completed }
+}
+
+/*
+  state.tasks.length gives the total number of tasks.
+
+  .filter(task => task.isCompleted).length
+  First filters to completed tasks, then counts them with .length.
+
+  active = total - completed
+  We calculate active from the other two instead of filtering
+  again - more efficient.
+
+  return { total, active, completed }
+  Object shorthand - same as:
+  return { total: total, active: active, completed: completed }
+*/
+
+/* =============================================================
+   SECTION 5: STORAGE
+
+   Functions that save and load data from localStorage.
+   localStorage persists data between page refreshes.
+   ============================================================= */
+
+const STORAGE_KEY = "taskmanager_tasks"
+
+/*
+  We define the storage key as a constant at the top.
+  If we need to change the key name later, we change it
+  in one place. This is better than having the string
+  "taskmanager_tasks" scattered across multiple functions.
+*/
+
+/**
+ * Saves the current tasks to localStorage.
+ */
+const saveToStorage = () => {
+		try {
+				const tasksJSON = JSON.stringify(state.tasks)
+				localStorage.setItem(STORAGE_KEY, tasksJSON)
+		} catch (error) {
+				console.error("Failed to save tasks to localStorage:", error)
+		}
+}
+
+/*
+  localStorage can only store STRINGS. Our tasks are objects.
+
+  JSON.stringify() converts JavaScript objects/arrays to
+  a JSON string:
+  [{ id: 1, text: "Buy groceries" }]
+  becomes:
+  '[{"id": 1,"text":"Buy groceries"}]'
+
+  localStorage.setItem(key,value) stores the string.
+
+  We wrap in try/catch because localStorage can fail:
+  - User has disabled storage in browser settings
+  - Storage quote is exceeded
+  - Private browsing mode restrictions
+
+  A try/catch prevents the error from crashing the app.
+  Instead we log it and continue. This is called
+  "graceful degradation" - the app still works, just
+  without persistence.
+*/
+
+/**
+ * Loads tasks from localStorage into state.
+ * Called once when the app starts.
+ */
+const loadFromStorage = () => {
+		try {
+				const tasksJSON = localStorage.getItem(STORAGE_KEY)
+
+				// If nothing stored yet, getItem returns null
+				if (!tasksJSON) {
+						return
+				}
+
+				const savedTasks = JSON.parse(tasksJSON)
+
+				// Verify we got an array before using it
+				if (Array.isArray(savedTasks)) {
+						state.tasks = savedTasks
+				}	
+		} catch (error) {
+				console.error("Failed to load tasks form localStorage:", error)
+				// State stays as empty array - app starts fresh
+		}
+}
+
+/*
+  localStorage.getItem(key) returns:
+  - The stored string if the key exists
+  - null if the key does not exist
+
+  if (!tasksJSON) returns early if null or empty string.
+
+  JSON.parse() is the reverse of JSON.stringify():
+  '[{"id":1,"text":"Buy groceries"}]'
+  becomes:
+  [{ id: 1, text: "Buy groceries" }]
+
+  Array.isArray(savedTasks) verifies the parsed data is
+  an array. If someone manually edited localStorage and
+  stored invalid data, this protects us from crashing.
+
+  This function is called once at app startup to restore
+  the previous session's tasks.
+*/
+
+/* =============================================================
+   CONSOLE TESTING - temporary, will be removed in lesson 5
+
+   Test the logic functions right now in the console.
+   ============================================================= */
+
+console.log("=== Task Manager Logic Tests ===")
+
+// Test createTask
+const testTask = createTask("Buy groceries")
+console.log("Created task:", testTask)
+
+// Test addTaskToState
+addTaskToState("But groceries")
+addTaskToState("Call dentist")
+addTaskToState("Write code")
+console.log("State after adding 3 tasks:", state.tasks)
+
+// Test getStats
+console.log("Stats:", getStats())
+
+// Test toggleTaskComplete
+const firstTaskId = state.tasks[0].id
+toggleTaskComplete(firstTaskId)
+console.log("After toggling first task:", state.tasks[0].isCompleted)
+
+// Test getFilteredTasks
+setFilter("active")
+console.log("Active tasks:", getFilteredTasks())
+
+setFilter("completed")
+console.log("Completed tasks:", getFilteredTasks())
+
+setFilter("all")
+console.log("All tasks:", getFilteredTasks())
+
+// Test validateTaskInput
+console.log("Validate tests:")
+console.log(validateTaskInput(""))
+console.log(validateTaskInput("a"))
+console.log(validateTaskInput("Buy milk"))
+console.log(validateTaskInput("x".repeat(201)))
+
+// Test clearCompletedTasks
+const cleared = clearCompletedTasks()
+console.log(`Cleared ${cleared} completed tasks`)
+console.log("Remaining tasks:", state.tasks)
